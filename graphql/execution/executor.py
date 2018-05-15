@@ -379,7 +379,7 @@ def complete_value(exe_context, return_type, field_asts, info, result):
 
     # print return_type, type(result)
     if isinstance(result, Exception):
-        raise GraphQLLocatedError(field_asts, original_error=result)
+        raise GraphQLLocatedError(field_asts, original_error=result) from result
 
     if isinstance(return_type, GraphQLNonNull):
         return complete_nonnull_value(exe_context, return_type, field_asts, info, result)
