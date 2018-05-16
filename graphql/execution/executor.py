@@ -2,6 +2,7 @@ import collections
 import functools
 import logging
 import sys
+import os
 from rx import Observable
 
 from six import string_types
@@ -22,6 +23,7 @@ from .middleware import MiddlewareManager
 
 logger = logging.getLogger(__name__)
 
+in_dev_mode = int(os.environ.get('GRAPHQL_ERROR_TRACE', '0')) or getattr(sys.flags, 'dev_mode', 0)
 
 def subscribe(*args, **kwargs):
     allow_subscriptions = kwargs.pop('allow_subscriptions', True)
@@ -379,6 +381,9 @@ def complete_value(exe_context, return_type, field_asts, info, result):
 
     # print return_type, type(result)
     if isinstance(result, Exception):
+        if in_dev_mode:
+            raise result
+
         raise GraphQLLocatedError(field_asts, original_error=result) from result
 
     if isinstance(return_type, GraphQLNonNull):
